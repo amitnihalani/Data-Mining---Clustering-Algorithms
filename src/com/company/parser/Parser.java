@@ -15,6 +15,11 @@ import java.util.List;
  */
 public class Parser {
 
+    /**
+     * Returns a list of gene objects created from information of genes provided in input file
+     * @param filePath - the path of input (dataset) file
+     * @return - a list of genes
+     */
     public static List<Gene> readDataSet(String filePath) {
         BufferedReader bufferedReader = getReader(filePath);
         List<Gene> dataSet = new ArrayList<>();
@@ -30,6 +35,11 @@ public class Parser {
         return dataSet;
     }
 
+    /**
+     * Returns a buffered reader for a file
+     * @param filePath - the path of the file
+     * @return - the buffered reader object
+     */
     private static BufferedReader getReader(String filePath) {
         BufferedReader bufferedReader = null;
         try {
@@ -41,9 +51,14 @@ public class Parser {
         return bufferedReader;
     }
 
+    /**
+     * Returns a gene object created from the information in input file.
+     * @param geneData - the gene information from input file
+     * @return - the created gene object.
+     */
     private static Gene getGeneObject(String geneData) {
         String[] geneInformation = geneData.split("\t");
-        return new Gene(Integer.parseInt(geneInformation[0]), Integer.parseInt(geneInformation[1]), Arrays.copyOfRange(geneInformation, 2, geneInformation.length));
+        return new Gene(Integer.parseInt(geneInformation[0]), Arrays.copyOfRange(geneInformation, 2, geneInformation.length));
     }
 
 
