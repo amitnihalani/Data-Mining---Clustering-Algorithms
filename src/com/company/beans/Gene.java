@@ -9,14 +9,16 @@ import java.util.List;
  */
 public class Gene {
     private int geneId;
+    private int groundTruth;
     private int clusterId;
     private List<Double> expressionValues = new ArrayList<Double>();
+
 
     // Constructor for Gene.
     public Gene(int id, int cId, String[] expressionValueList) {
         geneId = id;
-        clusterId = cId;
-        for(String expressionValue:expressionValueList) {
+        groundTruth = cId;
+        for (String expressionValue : expressionValueList) {
             expressionValues.add(Double.parseDouble(expressionValue));
         }
     }
@@ -24,7 +26,7 @@ public class Gene {
     public Gene(int id, String[] expressionValueList) {
         geneId = id;
         clusterId = -99;
-        for(String expressionValue:expressionValueList) {
+        for (String expressionValue : expressionValueList) {
             expressionValues.add(Double.parseDouble(expressionValue));
         }
     }
@@ -54,4 +56,11 @@ public class Gene {
         this.expressionValues = expressionValues;
     }
 
+    public int getGroundTruth() {
+        return groundTruth;
+    }
+
+    public void setGroundTruth(int groundTruth) {
+        this.groundTruth = groundTruth;
+    }
 }

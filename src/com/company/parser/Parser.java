@@ -1,19 +1,20 @@
 package com.company.parser;
 
+import com.company.beans.Cluster;
 import com.company.beans.Gene;
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Amit on 10/31/2015.
  */
 public class Parser {
+
+    Map<Integer, Cluster> clusters = new HashMap<Integer, Cluster>();
 
     /**
      * Returns a list of gene objects created from information of genes provided in input file
@@ -58,7 +59,7 @@ public class Parser {
      */
     private static Gene getGeneObject(String geneData) {
         String[] geneInformation = geneData.split("\t");
-        return new Gene(Integer.parseInt(geneInformation[0]), Arrays.copyOfRange(geneInformation, 2, geneInformation.length));
+        return new Gene(Integer.parseInt(geneInformation[0]), Integer.parseInt(geneInformation[1]), Arrays.copyOfRange(geneInformation, 2, geneInformation.length));
     }
 
 
