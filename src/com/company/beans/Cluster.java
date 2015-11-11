@@ -1,3 +1,4 @@
+
 package com.company.beans;
 
 import java.util.ArrayList;
@@ -17,6 +18,15 @@ public class Cluster {
         genes = new ArrayList<>();
         clusterId = cId;
     }
+    public Cluster(int cId,List<Gene> genes) {
+        clusterId = cId;
+        this.genes=genes;
+    }
+    public Cluster(){
+        
+    }
+    
+    
 
     public List<Gene> getGenes() {
         return genes;
@@ -45,5 +55,12 @@ public class Cluster {
     public void setCentroid(List<Double> centroid) {
         this.centroid = centroid;
     }
+    
+    public List<Gene> getItems(){
+        return genes;
+    }
+    
+    
+    
 
 }

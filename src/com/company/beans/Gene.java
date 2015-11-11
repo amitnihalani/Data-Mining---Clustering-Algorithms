@@ -53,5 +53,7 @@ public class Gene {
     public void setExpressionValues(List<Double> expressionValues) {
         this.expressionValues = expressionValues;
     }
+    
+    
 
 }

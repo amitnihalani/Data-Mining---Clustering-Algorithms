@@ -1,4 +1,4 @@
-package com.company.parser;
+    package com.company.parser;
 
 import com.company.beans.Gene;
 
