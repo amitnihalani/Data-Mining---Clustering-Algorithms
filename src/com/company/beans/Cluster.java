@@ -2,20 +2,22 @@
 package com.company.beans;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Amit on 11/6/2015.
  */
 public class Cluster {
 
-    private List<Gene> genes;
+    private Set <Gene> genes;
     private int clusterId;
     private List<Double> centroid;
 
     public Cluster(List<Double> head, int cId) {
         centroid = head;
-        genes = new ArrayList<>();
+        genes = new HashSet<>();
         clusterId = cId;
     }
     public Cluster(int cId,List<Gene> genes) {
@@ -28,11 +30,14 @@ public class Cluster {
     
     
 
-    public List<Gene> getGenes() {
+    public Set<Gene> getGenes() {
         return genes;
     }
 
     public void addGenes(List<Gene> genes) {
+        this.genes.addAll(genes);
+    }
+    public void addGenes(Set<Gene> genes) {
         this.genes.addAll(genes);
     }
 

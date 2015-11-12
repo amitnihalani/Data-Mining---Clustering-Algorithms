@@ -98,6 +98,7 @@ public class KMeans {
         clusterHeadCount--;
         for (int count = 0; count < clusterHeadCount; count++) {
             clusters.put(count + 1, new Cluster(clusterHeads.get(count).getExpressionValues(), count + 1));
+            clusters.get(count + 1).addGene(clusterHeads.get(count));
         }
         return clusters;
     }
@@ -113,7 +114,7 @@ public class KMeans {
         // iyer
         //int[] sampleGenes = {1, 102, 263, 301, 344, 356, 394, 411, 474, 493};
         int[] sampleGenes = {159,232,13,157,176};
-
+        //int[] sampleGenes = {3, 1, 6};
         for (int gene : sampleGenes) {
             clusterHeadCount++;
             clusterHeads.add(dataSet.get(gene - 1));
@@ -122,6 +123,7 @@ public class KMeans {
 
         for (int count = 0; count < clusterHeadCount; count++) {
             clusters.put(count + 1, new Cluster(clusterHeads.get(count).getExpressionValues(), count + 1));
+            clusters.get(count + 1).addGene(clusterHeads.get(count));
         }
         return clusters;
     }
@@ -185,7 +187,7 @@ public class KMeans {
 
     private void reCalculateCentroid(Cluster cluster) {
 
-        int geneCount = cluster.getGenes().size(), expressionValues = cluster.getGenes().get(0).getExpressionValues().size();
+        int geneCount = cluster.getGenes().size(), expressionValues = cluster.getCentroid().size();
         List<Double> centroid = new ArrayList<>(expressionValues);
         for (int i = 0; i < expressionValues; i++) {
             double expValue = 0.0;
@@ -206,20 +208,20 @@ public class KMeans {
                 int colGroundTruthClusterId = dataSet.get(col).getGroundTruth();
 
                 if (rowClusterId == colClusterId) {
-                    datasetMatrix[dataSet.get(row).getGeneId()-1][dataSet.get(col).getGeneId()-1] = 1;
+                    datasetMatrix[dataSet.get(row).getGeneId() - 1][dataSet.get(col).getGeneId() - 1] = 1;
                 }
 
                 if (rowGroundTruthClusterId == colGroundTruthClusterId) {
-                    groundTruthMatrix[dataSet.get(row).getGeneId()-1][dataSet.get(col).getGeneId()-1] = 1;
+                    groundTruthMatrix[dataSet.get(row).getGeneId() - 1][dataSet.get(col).getGeneId() - 1] = 1;
                 }
             }
         }
     }
 
-    void printMatrix(int[][]a) {
-        for(int i=0; i<a.length; i++) {
+    void printMatrix(int[][] a) {
+        for (int i = 0; i < a.length; i++) {
             System.out.println();
-            for(int j=0; j<a[0].length; j++) {
+            for (int j = 0; j < a[0].length; j++) {
                 System.out.print(a[i][j] + " ");
             }
         }
