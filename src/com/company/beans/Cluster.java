@@ -40,6 +40,9 @@ public class Cluster {
         this.genes.add(gene);
     }
 
+    public void setGenes(List<Gene> genes) {
+        this.genes = genes;
+    }
     public int getClusterId() {
         return clusterId;
     }
