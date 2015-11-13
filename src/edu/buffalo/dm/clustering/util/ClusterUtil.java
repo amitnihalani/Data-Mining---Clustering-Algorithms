@@ -2,14 +2,10 @@
  * Created by Siddharth on Nov 10, 2015
  */
 package edu.buffalo.dm.clustering.util;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.math3.ml.clustering.DoublePoint;
-
 import edu.buffalo.dm.clustering.bean.Cluster;
 import edu.buffalo.dm.clustering.bean.Gene;
 
@@ -104,7 +100,7 @@ public class ClusterUtil {
      * @param genes
      * @return
      */
-    public static List<DoublePoint> getGenePoints(List<Gene> genes) {
+/*    public static List<DoublePoint> getGenePoints(List<Gene> genes) {
     	List<DoublePoint> genePoints = new ArrayList<DoublePoint>();
     	for(Gene gene: genes) {
     		double[] exprValues = new double[gene.getExpressionValues().size()];
@@ -115,6 +111,6 @@ public class ClusterUtil {
     		genePoints.add(genePoint);
     	}
     	return genePoints;
-    }
+    }*/
 
 }

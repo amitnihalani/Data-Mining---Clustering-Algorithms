@@ -6,13 +6,13 @@ import edu.buffalo.dm.clustering.model.DBScan;
 import edu.buffalo.dm.clustering.model.HAC;
 import edu.buffalo.dm.clustering.model.KMeans;
 import edu.buffalo.dm.clustering.model.ModelEnum;
+import edu.buffalo.dm.clustering.model.HAC.DistanceType;
 import edu.buffalo.dm.clustering.util.ClusterUtil;
 import edu.buffalo.dm.clustering.util.ClusterValidation;
 import edu.buffalo.dm.clustering.util.Parser;
 
 import java.util.List;
 
-import org.apache.commons.math3.ml.clustering.*;
 
 public class Main {
 
@@ -55,11 +55,25 @@ public class Main {
         System.out.println("JC: " + jc + "\nSC: " + sc);
         ClusterUtil.resetClusterData(dataSet);
         */
-        
+        runHC(dataSet);
         long endTime = System.currentTimeMillis();
         System.out.println("\nExecuted in: " + ((double)(endTime - startTime) / 1000) + " seconds\n");
         System.out.println("=================================================");
 
+    }
+    
+    
+    private static void runHC(List<Gene> dataSet){
+        System.out.println("Running.....");
+        int k = 5;
+        HAC hac = new HAC(dataSet);
+        List<Cluster> clusters = hac.assignGenesToCluster(k,DistanceType.SINGLE_LINK);
+        hac.createPythonFile();
+        hac.printClusters();
+        double jc = ClusterValidation.getJaccardCoefficient(dataSet, ModelEnum.HIERARCHICAL);
+        double sc = ClusterValidation.getSilhouetteCoefficient(clusters);
+        System.out.println("JC: " + jc + "\nSC: " + sc);
+        ClusterUtil.resetClusterData(dataSet);
     }
     
     
