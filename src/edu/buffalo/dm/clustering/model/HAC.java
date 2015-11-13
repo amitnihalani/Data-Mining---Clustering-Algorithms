@@ -1,4 +1,4 @@
-package com.company.HAC;
+package edu.buffalo.dm.clustering.model;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -6,12 +6,15 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
-import com.company.beans.Cluster;
-import com.company.beans.Gene;
+import edu.buffalo.dm.clustering.bean.Cluster;
+import edu.buffalo.dm.clustering.bean.Gene;
+import edu.buffalo.dm.clustering.util.ClusterUtil;
 
 /**
  * 
@@ -33,7 +36,7 @@ public class HAC {
         currentClusters = new ArrayList<Cluster>();
         for (Gene gene : this.genes) {
             gene.setClusterId(cId);
-            List<Gene> genes = new ArrayList<Gene>();
+            Set<Gene> genes = new HashSet<Gene>();
             genes.add(gene);
             Cluster cluster = new Cluster(cId, genes);
             currentClusters.add(cluster);
@@ -41,10 +44,10 @@ public class HAC {
         }
     }
 
-    public Cluster assignGenesToCluster() {
+    public List<Cluster> assignGenesToCluster(int k) {
         generateInitialClusters();
         int clusterPairId = genes.size();
-        while (currentClusters.size() > 1) {
+        while (currentClusters.size() > k) { 
             ClusterPair closestClusters = findClosestClusters(currentClusters);
             ClusterPair clusterPair = searchClusterPairMap(closestClusters);
             clusterPairMap.put(clusterPairId, clusterPair);
@@ -54,13 +57,13 @@ public class HAC {
             currentClusters.remove(closestClusters.second);
             clusterPairId++;
         }
-        return currentClusters.get(0);
+        return currentClusters;
     }
 
     private ClusterPair searchClusterPairMap(ClusterPair pair) {
         
-        List<Gene> firstClusterGenes = pair.first.getGenes();
-        List<Gene> secondClusterGenes = pair.second.getGenes();
+        List<Gene> firstClusterGenes = new ArrayList<Gene>(pair.first.getGenes());
+        List<Gene> secondClusterGenes = new ArrayList<Gene>(pair.second.getGenes());
         for (int i = genes.size(); i < genes.size() + this.clusterPairMap.size(); i++) {
             ClusterPair p = clusterPairMap.get(i);
             if (pair.first.getClusterId() == p.first.getClusterId() || pair.first.getClusterId() == p.second.getClusterId()) {
@@ -77,18 +80,27 @@ public class HAC {
                 secondClusterGenes.addAll(p.second.getGenes());
             }
         }
-        pair.first.setGenes(firstClusterGenes);
-        pair.second.setGenes(secondClusterGenes);
+        pair.first.setGenes(new HashSet<Gene>(firstClusterGenes));
+        pair.second.setGenes(new HashSet<Gene>(secondClusterGenes));
         return pair;
     }
 
     private Cluster mergeClusters(ClusterPair mergeCluster, int clusterPairId) {
-        List<Gene> genes1 = mergeCluster.first.getGenes();
-        List<Gene> genes2 = mergeCluster.second.getGenes();
+        List<Gene> genes1 = new ArrayList<Gene>(mergeCluster.first.getGenes());
+        List<Gene> genes2 = new ArrayList<Gene>(mergeCluster.second.getGenes());
+        
         List<Gene> mergedList = new ArrayList<Gene>();
         mergedList.addAll(genes1);
         mergedList.addAll(genes2);
-        return new Cluster(clusterPairId, mergedList);
+        setClusterId(mergedList, clusterPairId);
+        return new Cluster(clusterPairId, new HashSet<Gene>(mergedList));
+    }
+    
+    
+    private void setClusterId(List<Gene> gene,int clusterPairId){
+    	for(Gene ele:gene){
+    		ele.setClusterId(clusterPairId);
+    	}
     }
 
     private ClusterPair findClosestClusters(List<Cluster> currentClusters) {
@@ -112,8 +124,8 @@ public class HAC {
     }
 
     public double singleLinkageDistance(Cluster i, Cluster j) {
-        List<Gene> genes = i.getGenes();
-        List<Gene> genes1 = j.getGenes();
+        List<Gene> genes = new ArrayList<Gene>(i.getGenes());
+        List<Gene> genes1 = new ArrayList<Gene>(j.getGenes());
         Double shortestDist = Double.MAX_VALUE;
         for (int k = 0; k < genes.size(); k++) {
             for (int l = 0; l < genes1.size(); l++) {
@@ -127,15 +139,8 @@ public class HAC {
     }
 
     private double calculateDistance(Gene i, Gene j) {
-        List<Double> list = i.getExpressionValues();
-        List<Double> list1 = j.getExpressionValues();
-        Double distance = 0.0;
-        for (int k = 0; k < list.size(); k++) {
-            double exp = list.get(k);
-            double exp1 = list1.get(k);
-            distance += Math.pow(exp - exp1, 2);
-        }
-        return Math.sqrt(distance);
+    	Map<Integer, Map<Integer, Double>> distanceMap = ClusterUtil.getGeneDistanceMatrix();
+    	return distanceMap.get(i.getGeneId()).get(j.getGeneId());
     }
 
     private static class ClusterPair {
@@ -151,12 +156,13 @@ public class HAC {
         }
     }
 
-    public void printFile() {
+    public void createPythonFile() {
         System.out.println("creating output file.");
         BufferedWriter buffWriter=null;
         try {
-            String path = System.getProperty("user.home")+File.separator+"results.txt";
-            buffWriter=new BufferedWriter(new FileWriter(new File(path)));
+            //String path = System.getProperty("user.home")+File.separator+"results.txt";
+        	String path = "src/results_HAC.txt";
+            buffWriter=new BufferedWriter(new FileWriter(new File(path).getAbsoluteFile()));
         } catch (IOException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -164,10 +170,18 @@ public class HAC {
         for (int rowNum : clusterPairMap.keySet()) {
             ClusterPair pair = clusterPairMap.get(rowNum);    
             try {
-                buffWriter.write(pair.first.getClusterId() + ",");
+            	int numOfGenes = pair.first.getGenes().size() + pair.second.getGenes().size();
+            	/*
+                System.out.print(pair.first.getClusterId() + ",");
+                System.out.print(pair.second.getClusterId() + ",");
+                System.out.print(String.format("%.6f", pair.distance) + ",");
+                System.out.print(pair.first.getGenes().size() + pair.second.getGenes().size());
+                System.out.println();
+                */
+            	buffWriter.write(pair.first.getClusterId() + ",");
                 buffWriter.write(pair.second.getClusterId() + ",");
                 buffWriter.write(String.format("%.6f", pair.distance) + ",");
-                buffWriter.write(pair.first.getGenes().size() + pair.second.getGenes().size());
+                buffWriter.write(Integer.toString(numOfGenes));
                 buffWriter.write("\n");
             } catch (IOException e) {
                 // TODO Auto-generated catch block
@@ -181,6 +195,11 @@ public class HAC {
             }
             
         }
+        try {
+        	buffWriter.close();
+        } catch(IOException e) {
+        	
+        }
         System.out.println("=======================================");
         System.out.println("File Created Successfully in home directory");
     }
@@ -188,7 +207,7 @@ public class HAC {
     public void printClusters() {
         for (Cluster cluster : currentClusters) {
             System.out.println("Id is-->" + cluster.getClusterId());
-            List<Gene> geneList = cluster.getGenes();
+            Set<Gene> geneList = cluster.getGenes();
             System.out.println("Size-->" + geneList.size());
             System.out.println();
         }

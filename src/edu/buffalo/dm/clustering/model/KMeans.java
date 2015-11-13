@@ -1,9 +1,9 @@
-package com.company.k_means;
-
-import com.company.beans.Cluster;
-import com.company.beans.Gene;
+package edu.buffalo.dm.clustering.model;
 
 import java.util.*;
+
+import edu.buffalo.dm.clustering.bean.Cluster;
+import edu.buffalo.dm.clustering.bean.Gene;
 
 /**
  * Created by Amit on 11/6/2015.
@@ -17,6 +17,10 @@ public class KMeans {
 
     public Map<Integer, Cluster> getClusters() {
         return clusters;
+    }
+    
+    public List<Cluster> getClusterList() {
+    	return new ArrayList<Cluster>(clusters.values());
     }
 
     public void setClusters(Map<Integer, Cluster> clusters) {
@@ -59,12 +63,12 @@ public class KMeans {
     public KMeans(List<Gene> dataset, int kCount) {
         dataSet = dataset;
         k = kCount;
-        clusters = generateInitialClustersStatic(dataSet);
+        clusters = generateInitialClusters(dataSet);
         assignGenesToClusters();
-        datasetMatrix = new int[dataset.size()][dataset.size()];
+        /*datasetMatrix = new int[dataset.size()][dataset.size()];
         groundTruthMatrix = new int[dataset.size()][dataset.size()];
         generateMatrices();
-        printMatrix(datasetMatrix);
+        printMatrix(datasetMatrix);*/
     }
 
     /**
@@ -198,7 +202,7 @@ public class KMeans {
         }
         cluster.setCentroid(centroid);
     }
-
+/*
     private void generateMatrices() {
         for (int row = 0; row < dataSet.size(); row++) {
             int rowClusterId = dataSet.get(row).getClusterId();
@@ -217,7 +221,7 @@ public class KMeans {
             }
         }
     }
-
+*/
     void printMatrix(int[][] a) {
         for (int i = 0; i < a.length; i++) {
             System.out.println();
@@ -226,4 +230,5 @@ public class KMeans {
             }
         }
     }
+    
 }

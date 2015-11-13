@@ -1,4 +1,4 @@
-package com.company.HAC;
+package edu.buffalo.dm.clustering.bean;
 
 public class FileObject {
     private int index1;

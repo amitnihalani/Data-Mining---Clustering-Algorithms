@@ -1,7 +1,6 @@
-package com.company.beans;
+package edu.buffalo.dm.clustering.bean;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -9,24 +8,28 @@ import java.util.List;
  */
 public class Gene {
     private int geneId;
-    private int groundTruth;
     private int clusterId;
     private List<Double> expressionValues = new ArrayList<Double>();
-
+    private int groundTruthClusterId;
+    
+    // for dbscan:
+    private boolean visited;
 
     // Constructor for Gene.
     public Gene(int id, int cId, String[] expressionValueList) {
         geneId = id;
-        groundTruth = cId;
-        for (String expressionValue : expressionValueList) {
+        clusterId = cId;
+        for(String expressionValue:expressionValueList) {
             expressionValues.add(Double.parseDouble(expressionValue));
         }
+        visited = false;
     }
 
-    public Gene(int id, String[] expressionValueList) {
+    public Gene(int id, String groundTruthCluster, String[] expressionValueList) {
         geneId = id;
-        clusterId = -99;
-        for (String expressionValue : expressionValueList) {
+        clusterId = -1;
+        groundTruthClusterId = Integer.parseInt(groundTruthCluster);
+        for(String expressionValue:expressionValueList) {
             expressionValues.add(Double.parseDouble(expressionValue));
         }
     }
@@ -55,14 +58,21 @@ public class Gene {
     public void setExpressionValues(List<Double> expressionValues) {
         this.expressionValues = expressionValues;
     }
-    
-    
 
-    public int getGroundTruth() {
-        return groundTruth;
-    }
+	public boolean isVisited() {
+		return visited;
+	}
 
-    public void setGroundTruth(int groundTruth) {
-        this.groundTruth = groundTruth;
-    }
+	public void setVisited(boolean visited) {
+		this.visited = visited;
+	}
+
+	public int getGroundTruthClusterId() {
+		return groundTruthClusterId;
+	}
+
+	public void setGroundTruthClusterId(int groundTruthClusterId) {
+		this.groundTruthClusterId = groundTruthClusterId;
+	}
+
 }
