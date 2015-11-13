@@ -65,7 +65,7 @@ public class Main {
     
     private static void runHC(List<Gene> dataSet){
         System.out.println("Running.....");
-        int k = 5;
+        int k = 1;
         HAC hac = new HAC(dataSet);
         List<Cluster> clusters = hac.assignGenesToCluster(k,DistanceType.SINGLE_LINK);
         hac.createPythonFile();

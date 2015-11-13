@@ -183,6 +183,12 @@ public class HAC {
         BufferedWriter buffWriter = null;
         try {
             String path = "src/results_HAC.txt";
+            
+            File f = new File(path);
+            if(f.exists() && !f.isDirectory()) { 
+                f.delete();
+            }
+            
             buffWriter = new BufferedWriter(new FileWriter(new File(path).getAbsoluteFile()));
         } catch (IOException e) {
             e.printStackTrace();
