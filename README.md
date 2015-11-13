@@ -1,6 +1,6 @@
 # Data-Mining---Clustering-Algorithms
 
-#Agglomerative Hierarchical Clustering
+##Agglomerative Hierarchical Clustering
 
 ###Dendogram for cho.txt file.
 ![Picture](/cho_dendogram.png)
