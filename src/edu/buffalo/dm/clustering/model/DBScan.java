@@ -57,77 +57,6 @@ public class DBScan {
 		*/
 	}
 
-	/*private void expandCluster(Gene gene, Set<Gene> neighbors, Cluster cluster, double eps, int minPts,
-			List<Gene> genes) {
-
-		cluster.addGene(gene);
-		gene.setClusterId(cluster.getClusterId());
-		
-		Queue<Gene> neighborQueue = new ArrayDeque<Gene>();
-		for(Gene neighbor: neighbors) {
-			if(!neighbor.isVisited()) {
-				neighborQueue.add(neighbor);
-				neighbor.setVisited(true);
-			}
-		}
-		
-		while(!neighborQueue.isEmpty()) {
-			Gene neighbor = neighborQueue.remove();
-			if(!neighbor.isVisited()) {
-				neighbor.setVisited(true);
-				Set<Gene> nNeighbors = regionQuery(neighbor, genes, eps);
-				if(nNeighbors.size() >= minPts) {
-					//neighbors.addAll(nNeighbors);
-					for(Gene n: nNeighbors) {
-						if(!n.isVisited()) {
-							neighborQueue.add(n);
-							n.setVisited(true);
-						}
-					}
-				}
-			}
-			if(neighbor.getClusterId() < 0) {
-				cluster.addGene(neighbor);
-				neighbor.setClusterId(cluster.getClusterId());
-			}
-		}
-	}*/
-
-	/*private void expandCluster(Gene gene, Set<Gene> neighbors, Cluster cluster, double eps, int minPts,
-			List<Gene> genes) {
-
-		cluster.addGene(gene);
-		gene.setClusterId(cluster.getClusterId());
-		
-		Queue<Gene> neighborQueue = new ArrayDeque<Gene>();
-		for(Gene neighbor: neighbors) {
-			if(!neighbor.isVisited()) {
-				neighborQueue.add(neighbor);
-				neighbor.setVisited(true);
-			}
-		}
-		
-		while(!neighborQueue.isEmpty()) {
-			Gene neighbor = neighborQueue.remove();
-			if(!neighbor.isVisited()) {
-				neighbor.setVisited(true);
-				Set<Gene> nNeighbors = regionQuery(neighbor, genes, eps);
-				if(nNeighbors.size() >= minPts) {
-					for(Gene n: nNeighbors) {
-						if(!n.isVisited()) {
-							neighborQueue.add(n);
-							n.setVisited(true);
-						}
-					}
-				}
-			}
-			if(neighbor.getClusterId() < 0) {
-				cluster.addGene(neighbor);
-				neighbor.setClusterId(cluster.getClusterId());
-			}
-		}
-	}*/
-	
 	/**
 	 * Expand cluster to find additional points that are density reachable from the given point
 	 * @param gene
@@ -145,10 +74,7 @@ public class DBScan {
 		
 		Queue<Gene> neighborQueue = new ArrayDeque<Gene>();
 		for(Gene neighbor: neighbors) {
-			//if(!neighbor.isVisited()) {
 				neighborQueue.add(neighbor);
-				//neighbor.setVisited(true);
-			//}
 		}
 		
 		while(!neighborQueue.isEmpty()) {
@@ -182,7 +108,6 @@ public class DBScan {
 		Set<Gene> neighbors = new HashSet<Gene>();
 		Map<Integer, Map<Integer, Double>> distanceMap = ClusterUtil.getGeneDistanceMatrix();
 		for(Gene g: genes) {
-			//double distance = ClusterUtil.getDistanceBetweenPoints(g.getExpressionValues(), gene.getExpressionValues(), 2);
 			double distance = distanceMap.get(gene.getGeneId()).get(g.getGeneId());
 			if(distance <= eps) {
 				neighbors.add(g);
@@ -190,21 +115,4 @@ public class DBScan {
 		}
 		return neighbors;
 	}
-	/*
-	private Set<Gene> regionQuery(Gene gene, List<Gene> genes, double eps) {
-		Set<Gene> neighbors = new HashSet<Gene>();
-		Map<Integer, Map<Integer, Double>> distanceMap = ClusterUtil.getGeneDistanceMatrix();
-		neighbors.add(gene);
-		for(Gene g: genes) {
-			if(!g.isVisited()) {
-				//double distance = ClusterUtil.getDistanceBetweenPoints(g.getExpressionValues(), gene.getExpressionValues(), 2);
-				double distance = distanceMap.get(gene.getGeneId()).get(g.getGeneId());
-				if(distance <= eps) {
-					neighbors.add(g);
-				}
-			}
-		}
-		return neighbors;
-	}
-	*/
 }

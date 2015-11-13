@@ -12,7 +12,9 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Amit on 10/31/2015.
@@ -41,11 +43,11 @@ public class Parser {
         return dataSet;
     }
     
-    public static void writeDataToFile(List<Gene> genes, ModelEnum model) {
+    public static void writeDataToFile(List<Gene> genes, String inFile, ModelEnum model) {
     	BufferedWriter bw = null;
     	FileWriter fw = null;
     	String fileName = model.toString();
-    	File file = new File("src/" + fileName + "_out");
+    	File file = new File("src/py/" + inFile + "_" + fileName + "_out");
     	try {
 	    	if(!file.exists()) {
 	    		file.createNewFile();
@@ -55,28 +57,31 @@ public class Parser {
 	    	
 	    	StringBuilder sb1 = new StringBuilder();
 	    	StringBuilder sb2 = new StringBuilder();
-	    	StringBuilder sb3 = new StringBuilder();
 	    	
-	    	sb1.append("[");
-	    	sb2.append("[");
 	    	String buf = "";
 	    	String bu = "";
+	    	Set<Integer> clusterIds = new HashSet<Integer>();
 	    	for(Gene gene: genes) {
-	    		sb1.append(bu + "[");
+	    		clusterIds.add(gene.getClusterId());
 	    		buf = "";
 	    		sb2.append(bu + gene.getClusterId());
 	    		List<Double> expr = gene.getExpressionValues();
 	    		for(int i=0; i<expr.size(); i++) {
 	    			sb1.append(buf + expr.get(i));
-	    			buf = ", ";
+	    			buf = ",";
 	    		}
-	    		sb1.append("]");
-	    		bu = ", ";
+	    		sb1.append(" ");
+	    		bu = ",";
 	    	}
-	    	sb1.append("]");
-	    	sb2.append("]");
 	    	
-	    	bw.write(sb1.toString() + "\n" + sb2.toString());
+	    	StringBuilder sb3 = new StringBuilder();
+	    	buf = "";
+	    	for(Integer clusterId: clusterIds) {
+	    		sb3.append(buf + clusterId);
+	    		buf = ",";
+	    	}
+	    	bw.write(sb1.toString().trim() + "\n" + sb2.toString() + "\n" + sb3.toString() + "\n");
+	    	bw.write(inFile + "_" + model.toString());
 	    	bw.close();
     	} catch(IOException e) {
     		System.err.println("Exception while writing to file");

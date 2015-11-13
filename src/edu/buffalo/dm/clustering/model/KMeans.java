@@ -107,31 +107,7 @@ public class KMeans {
         return clusters;
     }
 
-    // REMOVE THIS: JUST FOR TEST
-    //
-    //
-    //
-    private Map<Integer, Cluster> generateInitialClustersStatic(List<Gene> dataSet) {
-        List<Gene> clusterHeads = new ArrayList<>();
-        Map<Integer, Cluster> clusters = new HashMap<Integer, Cluster>();
-        int clusterHeadCount = 0, dataSetSize = dataSet.size();
-        // iyer
-        //int[] sampleGenes = {1, 102, 263, 301, 344, 356, 394, 411, 474, 493};
-        int[] sampleGenes = {159,232,13,157,176};
-        //int[] sampleGenes = {3, 1, 6};
-        for (int gene : sampleGenes) {
-            clusterHeadCount++;
-            clusterHeads.add(dataSet.get(gene - 1));
-        }
-
-
-        for (int count = 0; count < clusterHeadCount; count++) {
-            clusters.put(count + 1, new Cluster(clusterHeads.get(count).getExpressionValues(), count + 1));
-            clusters.get(count + 1).addGene(clusterHeads.get(count));
-        }
-        return clusters;
-    }
-
+    
     public void assignGenesToClusters() {
 
         while (true) {
