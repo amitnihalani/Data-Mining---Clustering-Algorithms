@@ -30,7 +30,6 @@ public class Main {
     		System.out.println("Enter filename (case-sensitive): ");
     		fileName = scanner.next();
     		dataSet = Parser.readDataSet("src/" + fileName);
-	        List<Cluster> clusters = null;
 	        
 	        while(true) {
 	        	System.out.println("1. K-means\n2. Hierarchical Agglomerative\n3. DB Scan\n4. Enter new file for dataset\n5. Exit");
@@ -39,17 +38,10 @@ public class Main {
 	        	long endTime = 0;	        	
 	        	switch(choice) {
 	        	case "1":	// K Means
-	        		startTime = System.currentTimeMillis();
-	        		int k = 5;
-			        KMeans kMeans = new KMeans(dataSet, k);
-			        kMeans.assignGenesToClusters();
-			        clusters = kMeans.getClusterList();
-			        ClusterUtil.printClusters(clusters);
-			        double jc = ClusterValidation.getJaccardCoefficient(dataSet, ModelEnum.K_MEANS);
-			        double sc = ClusterValidation.getSilhouetteCoefficient(clusters);
-			        System.out.println("JC: " + jc + "\nSC: " + sc);
-			        Parser.writeDataToFile(dataSet, fileName, ModelEnum.K_MEANS);
-			        ClusterUtil.resetClusterData(dataSet);
+					System.out.println("Enter the value of K: ");
+					int k = scanner.nextInt();
+					startTime = System.currentTimeMillis();
+			        runKMeans(k);
 	        		endTime = System.currentTimeMillis();
 			        break;
 		        
@@ -66,6 +58,7 @@ public class Main {
 	        		break;
 	        		
 	        	case "4":	// new file for dataset
+					System.out.println("Enter filename (case-sensitive): ");
 	        		fileName = scanner.next();
 	        		dataSet = Parser.readDataSet("src/" + fileName);
 	        		break;
@@ -158,6 +151,18 @@ public class Main {
         */
     }
 
+	private static void runKMeans(int k) {
+		KMeans kMeans = new KMeans(dataSet, k);
+		kMeans.assignGenesToClustersUsingKMeans();
+		kMeans.postProcessing();
+		List<Cluster> clusters = kMeans.getClusterList();
+		ClusterUtil.printClusters(clusters);
+		double jc = ClusterValidation.getJaccardCoefficient(dataSet, ModelEnum.K_MEANS);
+		double sc = ClusterValidation.getSilhouetteCoefficient(clusters);
+		System.out.println("JC: " + jc + "\nSC: " + sc);
+		Parser.writeDataToFile(dataSet, fileName, ModelEnum.K_MEANS);
+		ClusterUtil.resetClusterData(dataSet);
+	}
 /*
     private static void printClusters(KMeans kMeans) {
         int clusterCount = 1, total =0;
@@ -168,4 +173,6 @@ public class Main {
 
         System.out.println("Total gene count: " + total);
     }*/
+
+
 }

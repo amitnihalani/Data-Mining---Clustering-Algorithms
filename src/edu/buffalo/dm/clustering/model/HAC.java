@@ -16,9 +16,7 @@ import edu.buffalo.dm.clustering.bean.Gene;
 import edu.buffalo.dm.clustering.util.ClusterUtil;
 
 /**
- * 
  * @author hharwani
- *
  */
 public class HAC {
 
@@ -111,14 +109,14 @@ public class HAC {
             for (int j = i + 1; j < currentClusters.size(); j++) {
                 Cluster clusterJ = currentClusters.get(j);
                 switch (distanceType) {
-                case SINGLE_LINK:
-                    distance = singleLinkageDistance(clusterI, clusterJ);
-                    break;
-                case COMPLETE_LINK:
-                    distance = completeLinkageDistance(clusterI, clusterJ);
-                    break;
-                default:
-                    break;
+                    case SINGLE_LINK:
+                        distance = singleLinkageDistance(clusterI, clusterJ);
+                        break;
+                    case COMPLETE_LINK:
+                        distance = completeLinkageDistance(clusterI, clusterJ);
+                        break;
+                    default:
+                        break;
                 }
                 if (distance <= distanceBetweenThem) {
                     firstCandidate = clusterI;
@@ -144,7 +142,7 @@ public class HAC {
         }
         return shortestDist;
     }
-    
+
     public double completeLinkageDistance(Cluster i, Cluster j) {
         List<Gene> genes = new ArrayList<Gene>(i.getGenes());
         List<Gene> genes1 = new ArrayList<Gene>(j.getGenes());
@@ -152,7 +150,7 @@ public class HAC {
         for (int k = 0; k < genes.size(); k++) {
             for (int l = 0; l < genes1.size(); l++) {
                 double distance = calculateDistance(genes.get(k), genes1.get(l));
-                if (distance>longestDist) {
+                if (distance > longestDist) {
                     longestDist = distance;
                 }
             }
@@ -183,12 +181,12 @@ public class HAC {
         BufferedWriter buffWriter = null;
         try {
             String path = "src/results_HAC.txt";
-            
+
             File f = new File(path);
-            if(f.exists() && !f.isDirectory()) { 
+            if (f.exists() && !f.isDirectory()) {
                 f.delete();
             }
-            
+
             buffWriter = new BufferedWriter(new FileWriter(new File(path).getAbsoluteFile()));
         } catch (IOException e) {
             e.printStackTrace();
@@ -228,10 +226,10 @@ public class HAC {
             System.out.println("Cluster size is-->" + geneList.size());
             System.out.println("Genes in cluster are-->");
             System.out.println("[");
-            for(Gene gene:geneList){
-                System.out.print(gene.getGeneId()+",");
+            for (Gene gene : geneList) {
+                System.out.print(gene.getGeneId() + ",");
             }
-            System.out.print("]"+"\n");
+            System.out.print("]" + "\n");
             System.out.println("==============================================");
         }
     }

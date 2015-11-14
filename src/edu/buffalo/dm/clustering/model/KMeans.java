@@ -19,9 +19,9 @@ public class KMeans {
     public Map<Integer, Cluster> getClusters() {
         return clusters;
     }
-    
+
     public List<Cluster> getClusterList() {
-    	return new ArrayList<Cluster>(clusters.values());
+        return new ArrayList<Cluster>(clusters.values());
     }
 
     public void setClusters(Map<Integer, Cluster> clusters) {
@@ -60,17 +60,16 @@ public class KMeans {
         this.groundTruthMatrix = groundTruthMatrix;
     }
 
-
+    /**
+     * Constructor for creating KMeans object
+     *
+     * @param dataset - the original dataset - list of genes
+     * @param kCount  - the k value for teh algorithm
+     */
     public KMeans(List<Gene> dataset, int kCount) {
         dataSet = dataset;
         k = kCount;
         clusters = generateInitialClusters(dataSet);
-        //assignGenesToClustersUsingKMeans();
-        /*datasetMatrix = new int[dataset.size()][dataset.size()];
-        groundTruthMatrix = new int[dataset.size()][dataset.size()];
-        generateMatrices();
-        printMatrix(datasetMatrix);*/
-        //postProcessing();
     }
 
     /**
@@ -88,6 +87,12 @@ public class KMeans {
         return Math.sqrt(distance);
     }
 
+    /**
+     * Generates a map of cluster ids to the clusters containing randomly chosen K clusters
+     *
+     * @param dataSet - the original dataset with all genes
+     * @return - the map of cluster ids to the generated clusters
+     */
     private Map<Integer, Cluster> generateInitialClusters(List<Gene> dataSet) {
         List<Gene> clusterHeads = new ArrayList<>();
         Map<Integer, Cluster> clusters = new HashMap<Integer, Cluster>();
@@ -109,17 +114,19 @@ public class KMeans {
         return clusters;
     }
 
-    // REMOVE THIS: JUST FOR TEST
-    //
-    //
-    //
+    /**
+     * This method is just for testing the values for a static list of cluster ids
+     *
+     * @param dataSet - ooriginal dataset
+     * @return - map of clusters
+     */
     private Map<Integer, Cluster> generateInitialClustersStatic(List<Gene> dataSet) {
         List<Gene> clusterHeads = new ArrayList<>();
         Map<Integer, Cluster> clusters = new HashMap<Integer, Cluster>();
         int clusterHeadCount = 0, dataSetSize = dataSet.size();
         // iyer
         //int[] sampleGenes = {1, 102, 263, 301, 344, 356, 394, 411, 474, 493};
-        int[] sampleGenes = {159,232,13,157};
+        int[] sampleGenes = {159, 232, 13, 157};
         //int[] sampleGenes = {3, 1, 6};
         for (int gene : sampleGenes) {
             clusterHeadCount++;
@@ -134,13 +141,17 @@ public class KMeans {
         return clusters;
     }
 
+    /**
+     * Assigns genes to the clusters until the clusters are stable
+     */
     public void assignGenesToClustersUsingKMeans() {
-
         while (true) {
+            // set the flag initially to false
             boolean clusterChange = false;
             for (Gene g : dataSet) {
                 Cluster c = getClosestCluster(g, clusters);
                 if (c.getClusterId() != g.getClusterId()) {
+                    // set the flag to true if there are changes happening
                     clusterChange = true;
                     removeGeneFromCluster(g);
                     g.setClusterId(c.getClusterId());
@@ -149,6 +160,7 @@ public class KMeans {
                 }
             }
 
+            // stop processing once the clusters are stable
             if (clusterChange == false) {
                 break;
             }
@@ -156,8 +168,10 @@ public class KMeans {
 
     }
 
+    /**
+     * Assign genes to clusters using medoids instead of centroids
+     */
     public void assignGenesToClustersUsingKMediod() {
-
         while (true) {
             boolean clusterChange = false;
             for (Gene g : dataSet) {
@@ -215,7 +229,7 @@ public class KMeans {
     }
 
     /**
-     * Finds the closest cluster to the point
+     * Finds the closest cluster to the point using mediods
      *
      * @param gene     - the current gene
      * @param clusters - a map of all the clusters keyed with their Ids
@@ -235,6 +249,10 @@ public class KMeans {
         return closestCluster;
     }
 
+    /**
+     * Re calculates the centroid of the cluster
+     * @param cluster - the cluster
+     */
     private void reCalculateCentroid(Cluster cluster) {
 
         int geneCount = cluster.getGenes().size(), expressionValues = cluster.getCentroid().size();
@@ -249,20 +267,24 @@ public class KMeans {
         cluster.setCentroid(centroid);
     }
 
+    /**
+     * Re calculates medoid of the cluster
+     * @param cluster - the cluster of genes
+     */
     private void reCalculateMedoid(Cluster cluster) {
         int minDistance = Integer.MAX_VALUE, avgDistanceToAllPoints, geneCount = cluster.getGenes().size();
-        for(Gene currentGene : cluster.getGenes()) {
+        for (Gene currentGene : cluster.getGenes()) {
             avgDistanceToAllPoints = 0;
-            for(Gene gene : cluster.getGenes()) {
-                if(gene != currentGene) {
+            for (Gene gene : cluster.getGenes()) {
+                if (gene != currentGene) {
                     avgDistanceToAllPoints += ClusterUtil.getGeneDistanceMatrix().get(currentGene.getGeneId()).get(gene.getGeneId());
                 }
             }
-            if(geneCount > 1) {
-                avgDistanceToAllPoints = avgDistanceToAllPoints/(geneCount-1);
+            if (geneCount > 1) {
+                avgDistanceToAllPoints = avgDistanceToAllPoints / (geneCount - 1);
             }
 
-            if( avgDistanceToAllPoints < minDistance) {
+            if (avgDistanceToAllPoints < minDistance) {
                 minDistance = avgDistanceToAllPoints;
                 cluster.setMedoidGene(currentGene);
             }
@@ -278,11 +300,14 @@ public class KMeans {
         }
     }
 
+    /**
+     * Removes the clusters with minimum amount of points i.e. Noise Points
+     */
     public void postProcessing() {
         int tenPercentDatasetSize = (int) (dataSet.size() * 0.02);
-        for(Cluster c: getClusterList()){
-            if(c.getGenes().size() <= tenPercentDatasetSize) {
-                for(Gene g: c.getGenes()) {
+        for (Cluster c : getClusterList()) {
+            if (c.getGenes().size() <= tenPercentDatasetSize) {
+                for (Gene g : c.getGenes()) {
                     g.setClusterId(-1);
                 }
             }

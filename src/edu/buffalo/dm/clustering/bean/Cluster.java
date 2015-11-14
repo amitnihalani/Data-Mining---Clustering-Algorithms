@@ -15,10 +15,10 @@ public class Cluster {
     private Gene medoidGene;
 
     public Cluster(int cId) {
-    	clusterId = cId;
-    	genes = new HashSet<Gene>();
+        clusterId = cId;
+        genes = new HashSet<Gene>();
     }
-    
+
     public Cluster(List<Double> head, int cId) {
         centroid = head;
         genes = new HashSet<Gene>();
@@ -72,7 +72,7 @@ public class Cluster {
     public void setCentroid(List<Double> centroid) {
         this.centroid = centroid;
     }
-    
+
     public void setGenes(Set<Gene> genes) {
         this.genes = genes;
     }
