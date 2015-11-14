@@ -14,6 +14,8 @@ public class Cluster {
     private List<Double> centroid;
     private Gene medoidGene;
 
+    private double SSE;
+
     public Cluster(int cId) {
         clusterId = cId;
         genes = new HashSet<Gene>();
@@ -83,6 +85,14 @@ public class Cluster {
 
     public void setMedoidGene(Gene medoidGene) {
         this.medoidGene = medoidGene;
+    }
+
+    public double getSSE() {
+        return SSE;
+    }
+
+    public void setSSE(double SSE) {
+        this.SSE = SSE;
     }
 
 }

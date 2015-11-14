@@ -97,6 +97,7 @@ public class KMeans {
         List<Gene> clusterHeads = new ArrayList<>();
         Map<Integer, Cluster> clusters = new HashMap<Integer, Cluster>();
         int clusterHeadCount = 1, dataSetSize = dataSet.size();
+        // select k genes as initial cluster heads randomly
         while (clusterHeadCount <= k) {
             Gene g = dataSet.get(new Random().nextInt(dataSetSize));
 
@@ -156,7 +157,7 @@ public class KMeans {
                     removeGeneFromCluster(g);
                     g.setClusterId(c.getClusterId());
                     c.addGene(g);
-                    reCalculateCentroid(c);
+                    ClusterUtil.reCalculateCentroid(c);
                 }
             }
 
@@ -202,7 +203,7 @@ public class KMeans {
         if ((c = clusters.get(gene.getClusterId())) != null) {
             c.getGenes().remove(gene);
             gene.setClusterId(-99);
-            reCalculateCentroid(c);
+            ClusterUtil.reCalculateCentroid(c);
             reCalculateMedoid(c);
         }
     }
@@ -249,26 +250,11 @@ public class KMeans {
         return closestCluster;
     }
 
-    /**
-     * Re calculates the centroid of the cluster
-     * @param cluster - the cluster
-     */
-    private void reCalculateCentroid(Cluster cluster) {
 
-        int geneCount = cluster.getGenes().size(), expressionValues = cluster.getCentroid().size();
-        List<Double> centroid = new ArrayList<>(expressionValues);
-        for (int i = 0; i < expressionValues; i++) {
-            double expValue = 0.0;
-            for (Gene g : cluster.getGenes()) {
-                expValue += g.getExpressionValues().get(i);
-            }
-            centroid.add(expValue / geneCount);
-        }
-        cluster.setCentroid(centroid);
-    }
 
     /**
      * Re calculates medoid of the cluster
+     *
      * @param cluster - the cluster of genes
      */
     private void reCalculateMedoid(Cluster cluster) {
@@ -313,4 +299,6 @@ public class KMeans {
             }
         }
     }
+
+
 }

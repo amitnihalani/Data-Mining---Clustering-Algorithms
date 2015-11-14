@@ -37,7 +37,7 @@ public class ClusterUtil {
     public static void printClusters(List<Cluster> clusters) {
     	System.out.println("Clusters:");
     	for(Cluster cluster: clusters) {
-    		System.out.println("ClusterId: " + cluster.getClusterId() + "\tGene Count: " + cluster.getGenes().size());
+    		System.out.println("ClusterId: " + cluster.getClusterId() + "\tGene Count: " + cluster.getGenes().size() + "\tSSE: " + cluster.getSSE());
     	}
     }
     
@@ -94,7 +94,59 @@ public class ClusterUtil {
     	}
     	return noisePoints;
     }
-    
+
+	public static void calculateSSE(List<Cluster> clusters) {
+		double SSE;
+		for (Cluster c : clusters) {
+			SSE = 0.0;
+			for (Gene g : c.getGenes()) {
+				SSE += getSquaredDifference(g.getExpressionValues(), c.getCentroid());
+			}
+			c.setSSE(SSE);
+		}
+	}
+
+	private static double getSquaredDifference(List<Double> point1, List<Double> point2) {
+
+		List<Double> multiDimensionalDistance = new ArrayList<>();
+
+		for(int i=0; i<point1.size(); i++) {
+			multiDimensionalDistance.add(Math.pow(point1.get(i) - point2.get(i), 2));
+		}
+		return singleDimensionDistance(multiDimensionalDistance);
+	}
+
+	private static double singleDimensionDistance(List<Double> multiDimDistance) {
+		double distance = 0.0;
+		for(int i=0; i<multiDimDistance.size(); i++) {
+			distance+= multiDimDistance.get(i);
+		}
+		return distance/multiDimDistance.size();
+	}
+
+
+	/**
+	 * Re calculates the centroid of the cluster
+	 *
+	 * @param cluster - the cluster
+	 */
+	public static void reCalculateCentroid(Cluster cluster) {
+
+		int geneCount = cluster.getGenes().size();
+		List<Gene> genesInCluster = new ArrayList<>(cluster.getGenes());
+
+		int expressionValues = genesInCluster.get(0).getExpressionValues().size();
+
+		List<Double> centroid = new ArrayList<>(expressionValues);
+		for (int i = 0; i < expressionValues; i++) {
+			double expValue = 0.0;
+			for (Gene g : cluster.getGenes()) {
+				expValue += g.getExpressionValues().get(i);
+			}
+			centroid.add(expValue / geneCount);
+		}
+		cluster.setCentroid(centroid);
+	}
     /**
      * Generate gene points list to be used for apache library function
      * @param genes
