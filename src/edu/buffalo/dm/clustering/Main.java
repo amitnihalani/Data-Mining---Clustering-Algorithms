@@ -1,3 +1,4 @@
+
 package edu.buffalo.dm.clustering;
 
 import edu.buffalo.dm.clustering.bean.Cluster;
@@ -35,19 +36,22 @@ public class Main {
 	        	System.out.println("1. K-means\n2. Hierarchical Agglomerative\n3. DB Scan\n4. Enter new file for dataset\n5. Exit");
 	        	String choice = scanner.next();
 	        	long startTime = 0;
-	        	long endTime = 0;	        	
+	        	long endTime = 0;
+	        	int k=5;
 	        	switch(choice) {
 	        	case "1":	// K Means
 					System.out.println("Enter the value of K: ");
-					int k = scanner.nextInt();
+					k = scanner.nextInt();
 					startTime = System.currentTimeMillis();
 			        runKMeans(k);
 	        		endTime = System.currentTimeMillis();
 			        break;
 		        
-	        	case "2":	// HAC
+	        	case "2":
+	        	    System.out.println("Enter the value of K: ");
+                    k = scanner.nextInt();
 	        		startTime = System.currentTimeMillis();
-	        		runHC();
+	        		runHC(k);
 	        		endTime = System.currentTimeMillis();
 			        break;
 			        
@@ -80,9 +84,8 @@ public class Main {
     /**
      * Hierarchical Agglomerative Clustering
      */
-    private static void runHC(){
+    private static void runHC(int k){
         System.out.println("Running HAC.....");
-        int k = 1;
         HAC hac = new HAC(dataSet);
         List<Cluster> clusters = hac.assignGenesToCluster(k,DistanceType.SINGLE_LINK);
         hac.createPythonFile();
@@ -90,6 +93,7 @@ public class Main {
         double jc = ClusterValidation.getJaccardCoefficient(dataSet, ModelEnum.HIERARCHICAL);
         double sc = ClusterValidation.getSilhouetteCoefficient(clusters);
         System.out.println("\nJaccard: " + jc + "\nSilhouette: " + sc);
+        Parser.writeDataToFile(dataSet, fileName, ModelEnum.HIERARCHICAL);
         ClusterUtil.resetClusterData(dataSet);
     }
     
@@ -105,50 +109,14 @@ public class Main {
         eps = scanner.nextDouble();
         minPts = scanner.nextInt();
         List<Cluster> clusters = ds.dbScan(dataSet, eps, minPts);
-        
-        // write to file
-        // *****MAKE CHANGES HERE
         Parser.writeDataToFile(dataSet, fileName, ModelEnum.DBSCAN);
-        
         double jc = ClusterValidation.getJaccardCoefficient(dataSet, ModelEnum.DBSCAN);
         double sc = ClusterValidation.getSilhouetteCoefficient(clusters);
-        
         ClusterUtil.printClusters(clusters);
         List<Gene> noisePoints = ClusterUtil.getNoisePoints(dataSet);
         System.out.println("Noise Points: " + noisePoints.size());
         System.out.println("\nJaccard: " + jc + "\nSilhouette: " + sc);
-        
         ClusterUtil.resetClusterData(dataSet);
-        
-        
-        /*
-        for(eps = 0.5d; eps <= 4.1; eps += 0.1d) {
-        	for(minPts = 10; minPts <= 100; minPts += 10) {
-        		int count = 10;
-        		//while(count-- > 5) {
-			        String out = ds.dbScan(genes, eps, minPts);
-			        List<Gene> noisePoints = ClusterUtil.getNoisePoints(dataSet);
-			        //out += "," + ClusterUtil.jacardCoefficient(dataSet);
-			        System.out.printf("%.1f", eps);
-			        System.out.print("," + minPts + ",");
-			        System.out.printf("%.3f", ClusterValidation.getJaccardCoefficient(dataSet,ModelEnum.DBSCAN));
-			        System.out.println("," + out + "," + noisePoints.size());
-			        System.out.println();
-			        ClusterUtil.resetClusterData(dataSet);
-        		//}
-        	}
-        }
-        */        
-        /*
-        List<DoublePoint> genePoints = ClusterUtil.getGenePoints(dataSet);
-        DBSCANClusterer<DoublePoint> dbscan = new DBSCANClusterer<DoublePoint>(eps, minPts);
-        List<org.apache.commons.math3.ml.clustering.Cluster<DoublePoint>> apacheClusters = dbscan.cluster(genePoints);
-        System.out.println("######################\nApache:");
-        System.out.println("total clusters: " + apacheClusters.size());
-        for(org.apache.commons.math3.ml.clustering.Cluster<DoublePoint> apacheCluster: apacheClusters) {
-        	System.out.println(apacheCluster.getPoints().size());
-        }
-        */
     }
 
 	private static void runKMeans(int k) {
@@ -163,16 +131,5 @@ public class Main {
 		Parser.writeDataToFile(dataSet, fileName, ModelEnum.K_MEANS);
 		ClusterUtil.resetClusterData(dataSet);
 	}
-/*
-    private static void printClusters(KMeans kMeans) {
-        int clusterCount = 1, total =0;
-        for(Cluster c : kMeans.clusters.values()) {
-            System.out.println(String.format("Cluster #: %d \t Gene count: %d", clusterCount++, c.getGenes().size()));
-            total += c.getGenes().size();
-        }
-
-        System.out.println("Total gene count: " + total);
-    }*/
-
 
 }

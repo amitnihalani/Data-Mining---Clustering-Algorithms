@@ -180,7 +180,7 @@ public class HAC {
         System.out.println("creating output file.");
         BufferedWriter buffWriter = null;
         try {
-            String path = "src/results_HAC.txt";
+            String path = "src/py/results_HAC.txt";
 
             File f = new File(path);
             if (f.exists() && !f.isDirectory()) {
@@ -216,7 +216,7 @@ public class HAC {
 
         }
         System.out.println("=======================================");
-        System.out.println("File Created Successfully in home directory");
+        System.out.println("File Created Successfully");
     }
 
     public void printClusters() {
@@ -224,12 +224,6 @@ public class HAC {
             System.out.println("Cluster id is-->" + cluster.getClusterId());
             Set<Gene> geneList = cluster.getGenes();
             System.out.println("Cluster size is-->" + geneList.size());
-            System.out.println("Genes in cluster are-->");
-            System.out.println("[");
-            for (Gene gene : geneList) {
-                System.out.print(gene.getGeneId() + ",");
-            }
-            System.out.print("]" + "\n");
             System.out.println("==============================================");
         }
     }

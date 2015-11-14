@@ -3,11 +3,7 @@ import numpy as np
 from scipy.cluster.hierarchy import dendrogram, linkage
 from matplotlib import pyplot as plt
 np.set_printoptions(precision=8, suppress=True)
-data = np.loadtxt("results.txt",dtype=float,delimiter=",")
-print type(data)
-# data = np.loadtxt("iyer.txt",dtype=float,delimiter="\t",usecols = (2,3,4,5,6,7,8,9,10,11,12))
-# Z = linkage(data, 'single')
-
+data = np.loadtxt("results_HAC.txt",dtype=float,delimiter=",")
 plt.figure(figsize=(25, 10))
 plt.title('Hierarchical Clustering Dendrogram')
 plt.xlabel('sample index')

@@ -21,17 +21,9 @@ public class DBScan {
     List<Cluster> clusters;
 
     public List<Cluster> dbScan(List<Gene> genes, double eps, int minPts) {
-    /*public String dbScan(List<Gene> genes, double eps, int minPts) {*/
         clusters = new ArrayList<Cluster>();
         int cId = 0;
-        Collections.shuffle(genes);
-        boolean first = false;
-        int firstGId = -1;
         for (Gene gene : genes) {
-            if (!first) {
-                first = true;
-                firstGId = gene.getGeneId();
-            }
             if (!gene.isVisited()) {
                 gene.setVisited(true);
 
@@ -46,15 +38,7 @@ public class DBScan {
             }
         }
 
-        System.out.println("First gene: " + firstGId);
         return clusters;
-		
-		/*
-		//String out = eps + "," + minPts + "," + firstGId;
-		String out = String.format("%.3f", ClusterValidation.getSilhouetteCoefficient(clusters));
-		out += "," + firstGId;
-		return out;
-		*/
     }
 
     /**
