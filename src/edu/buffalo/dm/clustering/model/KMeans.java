@@ -4,6 +4,7 @@ import java.util.*;
 
 import edu.buffalo.dm.clustering.bean.Cluster;
 import edu.buffalo.dm.clustering.bean.Gene;
+import edu.buffalo.dm.clustering.util.ClusterUtil;
 
 /**
  * Created by Amit on 11/6/2015.
@@ -64,11 +65,12 @@ public class KMeans {
         dataSet = dataset;
         k = kCount;
         clusters = generateInitialClusters(dataSet);
-        assignGenesToClusters();
+        //assignGenesToClustersUsingKMeans();
         /*datasetMatrix = new int[dataset.size()][dataset.size()];
         groundTruthMatrix = new int[dataset.size()][dataset.size()];
         generateMatrices();
         printMatrix(datasetMatrix);*/
+        //postProcessing();
     }
 
     /**
@@ -101,14 +103,38 @@ public class KMeans {
 
         clusterHeadCount--;
         for (int count = 0; count < clusterHeadCount; count++) {
+            clusters.put(count + 1, new Cluster(clusterHeads.get(count), count + 1));
+            clusters.get(count + 1).addGene(clusterHeads.get(count));
+        }
+        return clusters;
+    }
+
+    // REMOVE THIS: JUST FOR TEST
+    //
+    //
+    //
+    private Map<Integer, Cluster> generateInitialClustersStatic(List<Gene> dataSet) {
+        List<Gene> clusterHeads = new ArrayList<>();
+        Map<Integer, Cluster> clusters = new HashMap<Integer, Cluster>();
+        int clusterHeadCount = 0, dataSetSize = dataSet.size();
+        // iyer
+        //int[] sampleGenes = {1, 102, 263, 301, 344, 356, 394, 411, 474, 493};
+        int[] sampleGenes = {159,232,13,157};
+        //int[] sampleGenes = {3, 1, 6};
+        for (int gene : sampleGenes) {
+            clusterHeadCount++;
+            clusterHeads.add(dataSet.get(gene - 1));
+        }
+
+
+        for (int count = 0; count < clusterHeadCount; count++) {
             clusters.put(count + 1, new Cluster(clusterHeads.get(count).getExpressionValues(), count + 1));
             clusters.get(count + 1).addGene(clusterHeads.get(count));
         }
         return clusters;
     }
 
-    
-    public void assignGenesToClusters() {
+    public void assignGenesToClustersUsingKMeans() {
 
         while (true) {
             boolean clusterChange = false;
@@ -130,6 +156,28 @@ public class KMeans {
 
     }
 
+    public void assignGenesToClustersUsingKMediod() {
+
+        while (true) {
+            boolean clusterChange = false;
+            for (Gene g : dataSet) {
+                Cluster c = getClosestClusterUsingMedoid(g, clusters);
+                if (c.getClusterId() != g.getClusterId()) {
+                    clusterChange = true;
+                    removeGeneFromCluster(g);
+                    g.setClusterId(c.getClusterId());
+                    c.addGene(g);
+                    reCalculateMedoid(c);
+                }
+            }
+
+            if (clusterChange == false) {
+                break;
+            }
+        }
+
+    }
+
     /**
      * Removes the gene from its cluster
      *
@@ -141,6 +189,7 @@ public class KMeans {
             c.getGenes().remove(gene);
             gene.setClusterId(-99);
             reCalculateCentroid(c);
+            reCalculateMedoid(c);
         }
     }
 
@@ -165,6 +214,27 @@ public class KMeans {
         return closestCluster;
     }
 
+    /**
+     * Finds the closest cluster to the point
+     *
+     * @param gene     - the current gene
+     * @param clusters - a map of all the clusters keyed with their Ids
+     * @return - the closest cluster
+     */
+    private Cluster getClosestClusterUsingMedoid(Gene gene, Map<Integer, Cluster> clusters) {
+        double minDistance = 99999;
+        Cluster closestCluster = null;
+        double distance;
+        for (Object c : clusters.values()) {
+            Cluster cluster = (Cluster) c;
+            if ((distance = ClusterUtil.getGeneDistanceMatrix().get(((Cluster) c).getMedoidGene().getGeneId()).get(gene.getGeneId())) < minDistance) {
+                closestCluster = cluster;
+                minDistance = distance;
+            }
+        }
+        return closestCluster;
+    }
+
     private void reCalculateCentroid(Cluster cluster) {
 
         int geneCount = cluster.getGenes().size(), expressionValues = cluster.getCentroid().size();
@@ -178,26 +248,27 @@ public class KMeans {
         }
         cluster.setCentroid(centroid);
     }
-/*
-    private void generateMatrices() {
-        for (int row = 0; row < dataSet.size(); row++) {
-            int rowClusterId = dataSet.get(row).getClusterId();
-            int rowGroundTruthClusterId = dataSet.get(row).getGroundTruth();
-            for (int col = 0; col < dataSet.size(); col++) {
-                int colClusterId = dataSet.get(col).getClusterId();
-                int colGroundTruthClusterId = dataSet.get(col).getGroundTruth();
 
-                if (rowClusterId == colClusterId) {
-                    datasetMatrix[dataSet.get(row).getGeneId() - 1][dataSet.get(col).getGeneId() - 1] = 1;
+    private void reCalculateMedoid(Cluster cluster) {
+        int minDistance = Integer.MAX_VALUE, avgDistanceToAllPoints, geneCount = cluster.getGenes().size();
+        for(Gene currentGene : cluster.getGenes()) {
+            avgDistanceToAllPoints = 0;
+            for(Gene gene : cluster.getGenes()) {
+                if(gene != currentGene) {
+                    avgDistanceToAllPoints += ClusterUtil.getGeneDistanceMatrix().get(currentGene.getGeneId()).get(gene.getGeneId());
                 }
+            }
+            if(geneCount > 1) {
+                avgDistanceToAllPoints = avgDistanceToAllPoints/(geneCount-1);
+            }
 
-                if (rowGroundTruthClusterId == colGroundTruthClusterId) {
-                    groundTruthMatrix[dataSet.get(row).getGeneId() - 1][dataSet.get(col).getGeneId() - 1] = 1;
-                }
+            if( avgDistanceToAllPoints < minDistance) {
+                minDistance = avgDistanceToAllPoints;
+                cluster.setMedoidGene(currentGene);
             }
         }
     }
-*/
+
     void printMatrix(int[][] a) {
         for (int i = 0; i < a.length; i++) {
             System.out.println();
@@ -206,5 +277,15 @@ public class KMeans {
             }
         }
     }
-    
+
+    public void postProcessing() {
+        int tenPercentDatasetSize = (int) (dataSet.size() * 0.02);
+        for(Cluster c: getClusterList()){
+            if(c.getGenes().size() <= tenPercentDatasetSize) {
+                for(Gene g: c.getGenes()) {
+                    g.setClusterId(-1);
+                }
+            }
+        }
+    }
 }

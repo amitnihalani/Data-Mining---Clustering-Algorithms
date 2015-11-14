@@ -12,6 +12,7 @@ public class Cluster {
     private Set<Gene> genes;
     private int clusterId;
     private List<Double> centroid;
+    private Gene medoidGene;
 
     public Cluster(int cId) {
     	clusterId = cId;
@@ -22,8 +23,23 @@ public class Cluster {
         centroid = head;
         genes = new HashSet<Gene>();
         clusterId = cId;
+        //medoid = new Gene()
     }
-    
+
+    @Override
+    public String toString() {
+        return "Cluster{" +
+                "genes=" + genes +
+                '}';
+    }
+
+    public Cluster(Gene gene, int cId) {
+        centroid = gene.getExpressionValues();
+        genes = new HashSet<Gene>();
+        clusterId = cId;
+        medoidGene = gene;
+    }
+
     public Cluster(int cId, Set<Gene> genes) {
         clusterId = cId;
         this.genes = genes;
@@ -59,6 +75,14 @@ public class Cluster {
     
     public void setGenes(Set<Gene> genes) {
         this.genes = genes;
+    }
+
+    public Gene getMedoidGene() {
+        return medoidGene;
+    }
+
+    public void setMedoidGene(Gene medoidGene) {
+        this.medoidGene = medoidGene;
     }
 
 }
